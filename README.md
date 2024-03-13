@@ -9,9 +9,9 @@ of modes is made. A list of the concrete additions made in QuGIT_v2 vs QuGIT can
 The other significant difference is the change in some of the conventions and formal definitions of Gaussian States. This election is made following [Phys. Rev. D 106, 105021]. They are:
 
 * $\hbar = 1$
-* $[q_{i},p_{i}] = i*\Omega$ (where $q_{i}$, $p_{i}$ are the quadratures and $\Omega$ is the symplectic matrix) 
+* $[q_{i},p_{i}] = i \cdot \Omega$ (where $q_{i}$, $p_{i}$ are the quadratures and $\Omega$ is the symplectic matrix) 
 * $\{A,B\}=AB+BA$ (anticonmutator)
-* The covariance matrix is defined as $V = \langle {x_{i}-R_{i},x_{j}-R_{j}} \rangle $ (where $R$ is the mean vector and $x$ is the quadratures vector).
+* The covariance matrix is defined as $V = < {x_{i}-R_{i},x_{j}-R_{j}}>$ (where $R$ is the mean vector and $x$ is the quadratures vector).
 
 In this package only one class is used, Gaussian_state and some auxiliary methods have been defined.
 
@@ -66,19 +66,19 @@ The toolbox makes use of the Numpy and Scipy packages.
 
 You can download the file "qgt.py" from this repository and use it as a module. In that case you have to call it from your script as
 
-```python import qgt ```
+``` import qgt ```
 
 Note that the location of the file is important and this sintaxis only work if "qgt.py" is in the same directory as the script from where you are calling it.
 
 Another option is to pip install the latest libnrary version from Pypi, in that case, in the terminal write:
 
-```bash python3 -m pip install QuGIT_v2```
+``` python3 -m pip install QuGIT_v2```
 
 And then import it in your scripts as
 
 ``` import QuGIT_v2.qgt as qgt ```
 
-No matter where is your script located this will work and you can call the functions from qgt as ```python qgt.Gaussian_state()```
+No matter where is your script located this will work and you can call the functions from qgt as ``` qgt.Gaussian_state()```
 
 ## Running example
 
