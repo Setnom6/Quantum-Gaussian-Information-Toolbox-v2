@@ -3,7 +3,7 @@
 QuGIT is an open-sourced object-oriented Python library aimed at simulating multimode quantum gaussian states developed
 by I. Brandão, D. Tandeitnik, T. Guerreiro (https://github.com/IgorBrandao42/Quantum-Gaussian-Information-Toolbox).
 
-QuGIT_v2 makes use of QuGIT but is more focused in the computation of correlations between modes, primarily using the Logarithmic Negativity. In addition, a bigger flexibility in the definition of elementary states with arbitrary number
+QuGIT_v2 (https://github.com/Setnom6/Quantum-Gaussian-Information-Toolbox-v2) makes use of QuGIT but is more focused in the computation of correlations between modes, primarily using the Logarithmic Negativity. In addition, a bigger flexibility in the definition of elementary states with arbitrary number
 of modes is made. A list of the concrete additions made in QuGIT_v2 vs QuGIT can found later.
 
 The other significant difference is the change in some of the conventions and formal definitions of Gaussian States. This election is made following [Phys. Rev. D 106, 105021]. They are:
