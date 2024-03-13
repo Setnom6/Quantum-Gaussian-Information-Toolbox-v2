@@ -82,7 +82,7 @@ No matter where is your script located this will work and you can call the funct
 
 ## Running example
 
-In the folder **Examples** there are some scripts with basic examples of implementation and calculations. 
+In the folder **Examples** there are some scripts with basic examples of implementation and calculations. These scripts import the toolbox as it were installed with pip. If is not the case, change the import line for the one showed in Installation. 
 
 ## Author
 
