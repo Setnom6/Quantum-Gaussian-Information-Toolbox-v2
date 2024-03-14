@@ -4,7 +4,7 @@ QuGIT is an open-sourced object-oriented Python library aimed at simulating mult
 by I. Brandão, D. Tandeitnik, T. Guerreiro (https://github.com/IgorBrandao42/Quantum-Gaussian-Information-Toolbox).
 
 QuGIT_v2 (https://github.com/Setnom6/Quantum-Gaussian-Information-Toolbox-v2) makes use of QuGIT but is more focused in the computation of correlations between modes, primarily using the Logarithmic Negativity. In addition, a bigger flexibility in the definition of elementary states with arbitrary number
-of modes is made. A list of the concrete additions made in QuGIT_v2 vs QuGIT can found later.
+of modes is made. A list of the concrete additions made in QuGIT_v2 vs QuGIT can be found later.
 
 The other significant difference is the change in some of the conventions and formal definitions of Gaussian States. This election is made following [Phys. Rev. D 106, 105021]. They are:
 
@@ -60,7 +60,7 @@ Is_Symplectic() is a method which allows to check if a given transformation matr
 
 ## Dependencies
 
-The toolbox makes use of the Numpy and Scipy packages.
+The toolbox makes use of the Numpy (version 1.26.4) and Scipy (version 1.11.4) packages.
 
 ## Installation
 
@@ -68,9 +68,9 @@ You can download the file "qgt.py" from this repository and use it as a module. 
 
 ``` import qgt ```
 
-Note that the location of the file is important and this sintaxis only work if "qgt.py" is in the same directory as the script from where you are calling it.
+Note that the location of the file is important and this syntax only work if "qgt.py" is in the same directory as the script from where you are calling it.
 
-Another option is to pip install the latest libnrary version from Pypi, in that case, in the terminal write:
+Another option is to pip install the latest library version from Pypi, in that case, in a Linux terminal write (for non Linux OS use the equivalent command to pip install):
 
 ``` python3 -m pip install QuGIT_v2```
 
@@ -78,7 +78,7 @@ And then import it in your scripts as
 
 ``` import QuGIT_v2.qgt as qgt ```
 
-No matter where is your script located this will work and you can call the functions from qgt as ``` qgt.Gaussian_state()```
+No matter where is your script located this will work and you can call the functions from qgt as ``` qgt.Gaussian_state()```, for example.
 
 ## Running example
 
