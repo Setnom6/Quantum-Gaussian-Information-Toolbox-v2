@@ -443,7 +443,7 @@ class Gaussian_state:                                                           
         
         temp = self.N_modes 
         if(temp == 2):                                                          # If the full system is only comprised of two modes
-            V0 = self.V                                                         # Take its full covariance matrix
+            auxGaussian = self.copy()                                                         # Take its full covariance matrix
             subsA=[0]
             subsB=[1]   
         elif(len(args)==1 and temp>2):                             #Only ons subsystem specified
@@ -453,6 +453,10 @@ class Gaussian_state:                                                           
             entries = np.isin(subsB, subsA)
             entries = [not elem for elem in entries]
             subsB = subsB[entries]   
+            auxGaussian=self.copy()  
+            auxGaussian.only_modes(subsA+subsB)                             # Otherwise, get only the modes for each subsystem  
+            subsA = [i for i in range(0,len(subsA))]                    # rewrite the indexes for the new gaussian state
+            subsB = [i for i in range(len(subsA),auxGaussian.N_modes)]           # rewrite the indexes for the new gaussian state
                                                        
         elif(len(args) > 1 and temp > 2):
             subsA = args[0]                                                 
@@ -467,15 +471,13 @@ class Gaussian_state:                                                           
 
             auxGaussian=self.copy()  
             auxGaussian.only_modes(subsA+subsB)                             # Otherwise, get only the modes for each subsystem  
-            V0=auxGaussian.V                                              # Take the full Covariance matrix of this subsystem
+            subsA = [i for i in range(0,len(subsA))]                    # rewrite the indexes for the new gaussian state
+            subsB = [i for i in range(len(subsA),auxGaussian.N_modes)]           # rewrite the indexes for the new gaussian state
         else:
             raise TypeError('Unable to decide which bipartite entanglement to infer, please pass the indexes to the desired bipartition')
         
         
-        V0_only = self.copy()
-        if (len(subsA)+len(subsB))< self.N_modes:				# In order to compute the partial transpose if we do not want all the modes
-            V0_only.only_modes(np.concatenate((np.array(subsA),np.array(subsB))))
-        eigs=V0_only.partial_transpose(subsA,subsB).symplectic_eigenvalues() # create the partial transpose and generate its eigenvalues
+        eigs=auxGaussian.partial_transpose(subsA,subsB).symplectic_eigenvalues() # create the partial transpose and generate its eigenvalues
         LN=0
         for i,value in enumerate(eigs):
             LN=LN+np.max([0,-np.log2(value[0])])                                   # Calculate the logarithmic negativity. value[0] is used because eigs has de shape [[vi],[v2],...]
