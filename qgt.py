@@ -134,7 +134,7 @@ class Gaussian_state:                                                           
             r = varargin[2];                                                    # Make sure its squeezing parameter is a real number
             assert np.isreal(r), "Unsupported imaginary amplitude for squeezed state"
             self.R = np.zeros((2*modes,1))
-            aux_v=np.diag([np.exp(+2*r), np.exp(-2*r)])                         #With a variance aux variable we create its variance
+            aux_v=np.diag([np.exp(-2*r), np.exp(+2*r)])                         #With a variance aux variable we create its variance
             self.V =np.kron(np.eye(modes,dtype=int), aux_v);                    # Create its first moments
             return
         
@@ -152,8 +152,10 @@ class Gaussian_state:                                                           
       V_check = self.V + 1j*self.Omega
       eigvalue, eigvector = np.linalg.eig(V_check)
       
-      assert all(eigvalue>=0), "CM does not satisfy uncertainty relation!"
+      # assert all(eigvalue>=0), "CM does not satisfy uncertainty relation!"   This is the theoretical condition, but numerical errors can make it fail
       
+      eigvalue = np.array([i for i in eigvalue if np.abs(i) >= 1e-10])          # We remove the numerical errors
+      assert np.all(eigvalue>=0), "CM does not satisfy uncertainty relation!"
       return V_check
     
     def __str__(self):
@@ -302,6 +304,18 @@ class Gaussian_state:                                                           
         eigs = self.symplectic_eigenvalues()
         tol = 1e-7                                  # Tolerance for computation errors 
         assert eigs[0][0]>=1-tol, "The covariance matrix is not a bona fide cov matrix"
+        return True
+
+
+    def purity(self):
+      """
+      Purity of a gaussian state (pure states have unitary purity)
+       
+       CALCULATES:
+           p - purity
+      """
+      
+      return 1/np.prod( self.symplectic_eigenvalues() )
 
 
     def partial_transpose(self,*args):
@@ -341,10 +355,19 @@ class Gaussian_state:                                                           
         else:
             raise TypeError('Unable to decide which bipartite entanglement to infer, please pass the indexes to the desired bipartition')
         
-        Zpauli=np.array([[1, 0], [0, -1]])                                      #We create the matrix T of 2N Identity matrices and M pauli matrices
+        # We have to create the matrix T of 2N Identity matrices and M pauli matrices
+        # But we have to take into account that the subsA modes are the
+        # ones that are transposed, so we have to order the matrices Z and Identities
+        # in the correct order
+
+        T = np.eye(2*modes)
+        for i in range(modes):
+            if i in subsA:
+                T[2*i+1][2*i+1] = -1 # We change the sign of the momentum quadrature of the modes in subsA
+        """Zpauli=np.array([[1, 0], [0, -1]])                                      #We create the matrix T of 2N Identity matrices and M pauli matrices
         T=block_diag(np.eye(2*len(subsA)),Zpauli)
         for i in range(len(subsB)-1):
-            T=block_diag(T,Zpauli)
+            T=block_diag(T,Zpauli)"""
         Vpt=np.matmul(np.matmul(T,self.V),T)                                      #Create the partial transpose covariance matrix
         return Gaussian_state(np.zeros(2*(len(subsA)+len(subsB))),Vpt)
 
