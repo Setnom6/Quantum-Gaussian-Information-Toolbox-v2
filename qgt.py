@@ -549,6 +549,16 @@ class Gaussian_state:                                                           
         return LN
 
 
+
+    def add_thermal_noise(self, nbar):
+        """
+        Add thermal noise to the gaussian state
+        """
+
+        assert nbar>=0, "Imaginary or negative occupation number for thermal state" # Make sure its occuption number is a non-negative number
+        self.V = (1+2*nbar)*self.V
+
+
         # Gaussian unitaries (applicable to two mode states)
     def beam_splitter(self, tau, modes=[0, 1]):
         """
