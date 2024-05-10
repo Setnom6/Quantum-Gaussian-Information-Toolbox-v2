@@ -70,7 +70,7 @@ You can download the file "qgt.py" from this repository and use it as a module. 
 
 Note that the location of the file is important and this syntax only work if "qgt.py" is in the same directory as the script from where you are calling it.
 
-Another option is to pip install the latest library version from Pypi, in that case, in a Linux terminal write (for non Linux OS use the equivalent command to pip install):
+Another option is to pip install the latest library version from Pypi (not recommended since the version could be outdated compared to this repository), in that case, in a Linux terminal write (for non Linux OS use the equivalent command to pip install):
 
 ``` python3 -m pip install QuGIT_v2```
 
