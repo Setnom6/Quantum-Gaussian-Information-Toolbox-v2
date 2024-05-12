@@ -77,7 +77,7 @@ class Gaussian_state:                                                           
             R0 = args[0]
             V0 = args[1]
             
-            R_is_real = all(np.isreal(R0))
+            R_is_real = np.all(np.isreal(R0))
             R_is_vector = np.squeeze(R0).ndim == 1
             
             V_is_matrix = np.squeeze(V0).ndim == 2
@@ -707,7 +707,7 @@ class Gaussian_state:                                                           
         ARGUMENTS:
             S,d - affine symplectic map (S, d) acting on the phase space, equivalent to gaussian unitary
         """
-        assert all(np.isreal(d)) , "Error when applying generic unitary, displacement d is not real!"
+        assert np.all(np.isreal(d)) , "Error when applying generic unitary, displacement d is not real!"
 
         S_is_symplectic = np.allclose(np.matmul(np.matmul(np.abs(S), self.Omega), np.transpose(np.abs(S))), self.Omega,1e-7)
         
@@ -790,7 +790,26 @@ def elementary_states(type, modes_parameters):
     return tensor_product(single_mode_gs)
 
 
+def BasisChange(S, type):
+    """
+    Inputs: -A scattering matrix
+            -The original type of the matrix (1 for S in terms of bogoliubov coefs or 0 for S in terms of quadratures)
+    Outputs: -The scattering matrix in the other basis
+    """
 
+    assert isinstance(S,np.ndarray) and S.shape[0]==S.shape[1], "S matrix is not an array or is not an square matrix"
+    assert isinstance(type,int) and (type ==0 or type == 1), "Second argument must be 0 or 1" 
+
+    modes = int(S.shape[0]/2)
+    B_one=np.array([[(1+0j)/np.sqrt(2),(0+1j)/np.sqrt(2)],
+                       [(1+0j)/np.sqrt(2),(0-1j)/np.sqrt(2)]],dtype=complex)                #To transform the matrix S into quadrature basis we create B
+    B=np.kron(np.eye(modes,dtype=int), B_one)
+
+    if type == 0:
+        return np.dot(B,np.dot(S,np.linalg.inv(B)))
+    
+    elif type == 1:
+        return np.real(np.dot(np.linalg.inv(B),np.dot(S,B)))
 
 
 def LN_generalized(S,InState,subsA,subsB,*args):
@@ -812,11 +831,7 @@ def LN_generalized(S,InState,subsA,subsB,*args):
     Sr=S
     N=InState.N_modes                                                                 #To know how many modes we have
     if len(args)>0 and args[0]==1:
-        B_one=np.array([[(1+0j)/np.sqrt(2),(0+1j)/np.sqrt(2)],
-                       [(1+0j)/np.sqrt(2),(0-1j)/np.sqrt(2)]],dtype=complex)                #To transform the matrix S into quadrature basis we create B
-        B=np.kron(np.eye(N,dtype=int), B_one)
-        Sr=np.dot(np.linalg.inv(B),np.dot(S,B))
-        Sr=np.real(Sr)
+        Sr=BasisChange(S,1)                                                         #We change the scattering matrix to the quadrature basis
     InState.apply_unitary(Sr,[0.])                                                  #We apply the scattering matrix (with displacement 0)  
     if len(args)>1:
         eta=args[1]    
@@ -847,10 +862,10 @@ def Is_Sympletic(S,type):
                 rel3 = 0
                 rel4 = 0
                 for K in range (0,modes):
-                    rel1 = rel1 + S[2*I][2*K]*S[2*J+1][2*K+1]-S[2*I][2*K+1]*S[2*J+1][2*K]
-                    rel2 = rel2 + S[2*I][2*K]*S[2*J][2*K+1]-S[2*I][2*K+1]*S[2*J][2*K]
-                    rel3 = rel3 + S[2*K+1][2*I+1]*S[2*K][2*J]-S[2*K][2*I+1]*S[2*K+1][2*J]
-                    rel4 = rel4 + S[2*K+1][2*I+1]*S[2*K][2*J+1]-S[2*K][2*I+1]*S[2*K+1][2*J+1]
+                    rel1 = rel1 + S[2*K][2*I]*S[2*K+1][2*J+1]-S[2*K+1][2*I]*S[2*K][2*J+1]
+                    rel2 = rel2 + S[2*K][2*I]*S[2*K+1][2*J]-S[2*K+1][2*I]*S[2*K][2*J]
+                    rel3 = rel3 + S[2*I+1][2*K+1]*S[2*J][2*K]-S[2*I+1][2*K]*S[2*J][2*K+1]
+                    rel4 = rel4 + S[2*I+1][2*K+1]*S[2*J+1][2*K]-S[2*I+1][2*K]*S[2*J+1][2*K+1]
 
                 
                 if I == J:
