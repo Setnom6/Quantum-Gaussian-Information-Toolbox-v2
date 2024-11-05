@@ -558,6 +558,53 @@ class Gaussian_state:                                                           
         assert nbar>=0, "Imaginary or negative occupation number for thermal state" # Make sure its occuption number is a non-negative number
         self.V = (1+2*nbar)*self.V
 
+    def fidelity(self, rho_2):
+        """
+        Calculates the fidelity between the two arbitrary gaussian states
+        
+        ARGUMENTS:
+            rho_1, rho_2 - gaussian states to be compared through fidelity
+         
+        CALCULATES:
+            F - fidelity between rho_1 and rho_2
+        
+        REFERENCE:
+            Phys. Rev. Lett. 115, 260501.
+       
+        OBSERVATION:
+        The user should note that non-normalized quadratures are expected;
+        They are normalized to be in accordance with the notation of Phys. Rev. Lett. 115, 260501.
+        """
+      
+        assert self.N_modes == rho_2.N_modes, "Impossible to calculate the fidelity between gaussian states of diferent sizes!" 
+        
+        u_1 = self.R/np.sqrt(2.0);                                              # Normalize the mean value of the quadratures
+        u_2 = rho_2.R/np.sqrt(2.0);
+        
+        V_1 = self.V/2.0;                                                       # Normalize the covariance matrices
+        V_2 = rho_2.V/2.0;
+        
+        OMEGA = self.Omega;
+        OMEGA_T = np.transpose(OMEGA)
+        
+        delta_u = u_2 - u_1;                                                    # A bunch of auxiliar variables
+        delta_u_T = np.hstack(delta_u)
+        
+        inv_V = np.linalg.inv(V_1 + V_2);
+        
+        V_aux = np.matmul( np.matmul(OMEGA_T, inv_V), OMEGA/4 + np.matmul(np.matmul(V_2, OMEGA), V_1) )
+        
+        identity = np.identity(2*self.N_modes);
+        
+        # V_temp = np.linalg.pinv(np.matmul(V_aux,OMEGA))                         # Trying to bypass singular matrix inversion ! I probably shouldnt do this...
+        # F_tot_4 = np.linalg.det( 2*np.matmul(sqrtm(identity + matrix_power(V_temp                ,+2)/4) + identity, V_aux) );
+        F_tot_4 = np.linalg.det( 2*np.matmul(sqrtm(identity + matrix_power(np.matmul(V_aux,OMEGA),-2)/4) + identity, V_aux) );
+        
+        F_0 = (F_tot_4.real / np.linalg.det(V_1+V_2))**(1.0/4.0);               # We take only the real part of F_tot_4 as there can be a residual complex part from numerical calculations!
+        
+        F = F_0*np.exp( -np.matmul(np.matmul(delta_u_T,inv_V), delta_u)  / 4);                        # Fidelity
+        return F
+
 
         # Gaussian unitaries (applicable to two mode states)
     def beam_splitter(self, tau, modes=[0, 1]):
@@ -715,6 +762,23 @@ class Gaussian_state:                                                           
         
         self.R = np.matmul(S, self.R) + d
         self.V = np.matmul(np.matmul(S, self.V), np.transpose(S))
+
+    # Generic multimode gaussian unitary in terms of Bogoliubov coefficients
+    def apply_Bogoliubov_unitary(self, S):
+        """
+        Apply a generic gaussian unitary on the gaussian state in terms of the Bogoliubov coefficients
+        by changing first the basis and then performing the unitary transformation
+
+        ARGUMENTS:
+            S - Bogoliubov transformation matrix
+        """
+
+        B_one=np.array([[(1+0j)/np.sqrt(2),(0+1j)/np.sqrt(2)],
+                       [(1+0j)/np.sqrt(2),(0-1j)/np.sqrt(2)]],dtype=complex)                #To transform the matrix S into quadrature basis we create B
+        B=np.kron(np.eye(self.N_modes,dtype=int), B_one)
+        Sr=np.dot(np.linalg.inv(B),np.dot(S,B))
+        Sr=np.real(Sr)
+        self.apply_unitary(Sr,[0.])     
 
     #Method to introduce attenuation
     def attenuation(self,eta):
